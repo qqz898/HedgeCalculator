@@ -1,0 +1,19 @@
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python:
+*.py[cod]		#忽略.pyc  .pyo  .pyd文件
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# My configurations:
+.settings
+*.prefs
+.*class
+.classpath
+.project
