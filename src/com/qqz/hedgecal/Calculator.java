@@ -63,6 +63,8 @@ public class Calculator {
 				try {
 					String userInput = scanner.next();
 					if(userInput.equals("#"))	return;	//处理用户退出指令
+					if(new BigDecimal(userInput).compareTo(BigDecimal.ZERO) <= 0)
+						promptDataValueError();
 					System.out.println("------------------开始分析，请稍候------------------");
 					BigDecimal moneyBack = new BigDecimal(userInput);
 					BigDecimal moneySpent = BigDecimal.ZERO;
@@ -72,6 +74,7 @@ public class Calculator {
 					System.out.println("具体投资配额如下:");
 					for(int i = 0 ; i < purchaseStrategy.length ; i++) {
 						List<Integer> list = purchaseStrategy[i];
+						if(list == null)	continue;	//说明此平台没有一个结果的赔率最高
 						System.out.println("第 " + (i + 1) + " 家平台投注的结果：");
 						for(int j = 0 ; j < list.size() ; j++) {
 							System.out.println("    -第 " + (list.get(j) + 1) + " 号结果投注" + moneyBack.divide(highestodds[list.get(j)], 6, RoundingMode.HALF_DOWN) + "元");
@@ -81,8 +84,7 @@ public class Calculator {
 					System.out.println("总投资 " + moneySpent + " 元，预计可收回 " + moneyBack + " 元，预计收益 " + (moneyBack.subtract(moneySpent)) + " 元");
 					System.out.println("------------------结果分割线------------------");
 				} catch (NumberFormatException e) {
-					System.out.println("数据格式错误，请重启程序再来一次。");
-					System.exit(0);
+					promptDataFormatError();
 				}
 			}
 			
@@ -97,15 +99,12 @@ public class Calculator {
 		try {
 			System.out.println("请输入希望进行对冲操作的平台数量：");
 			platformNum = scanner.nextInt();
+			if(platformNum <= 1)	promptDataValueError();
 			System.out.println("请输入比赛结果数量：");
 			resultNum = scanner.nextInt();
-			if(platformNum <= 1 || resultNum <= 1) {
-				System.out.println("输入的数据值有误，无法进行对冲计算，请重启程序再来一次");
-				System.exit(0);
-			}
+			if(resultNum <= 1) 		promptDataValueError();
 		} catch (InputMismatchException e) {
-			System.out.println("数据格式错误，请重启程序再来一次。");
-			System.exit(0);
+			promptDataFormatError();
 		}
 	}
 	
@@ -116,25 +115,49 @@ public class Calculator {
 	private static List<BigDecimal[]> getOdds() {
 		List<BigDecimal[]> odds = new ArrayList<>();
 		for(int i = 1 ; i <= platformNum ; i++) {
-			System.out.println("请输入 " + i + " 号平台的赔率(如1赔1.45则输入1.45)：");
+			System.out.println("请输入第 " + i + " 家平台的赔率(如1赔1.45则输入1.45)：");
 			BigDecimal[] odd = new BigDecimal[resultNum];
 			for(int j = 0 ; j < resultNum ; j++) {
 				try {
 					BigDecimal userInputOdd = new BigDecimal(scanner.next());
 					if(userInputOdd.compareTo(BigDecimal.ONE) <= 0) {
-						System.out.println("输入的数据值有误，无法进行对冲计算，请重启程序再来一次");
-						System.exit(0);
+						promptDataValueError();
 					}
 					odd[j] = userInputOdd;
 				} catch (NumberFormatException e) {
-					System.out.println("数据格式错误，请重启程序再来一次。");
-					System.exit(0);
+					promptDataFormatError();
 				}				
 			}
 			odds.add(odd);
 		}
 		
 		return odds;
+	}
+	
+	/**
+	 * 用于提示用户数据格式错误(如输入字母等非法字符)
+	 */
+	private static void promptDataFormatError(){
+		System.out.println("数据格式错误，请重启程序再来一次。");
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.exit(0);
+	}
+	
+	/**
+	 * 用于提示用户数据值输入有误(如输入负数金额等)
+	 */
+	private static void promptDataValueError() {
+		System.out.println("输入的数据值有误，无法进行对冲计算，请重启程序再来一次");
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.exit(0);
 	}
 		
 	/**
@@ -143,7 +166,7 @@ public class Calculator {
 	private static void printHead() {
 		System.out.println("*******************************对冲投资计算器*******************************");
 		System.out.println("                          $$$$$$$$说明 $$$$$$$$"); 
-		System.out.println("  1. 本计算器用于根据不同博彩公司对某场比赛的不同赔率给出对冲投资建议按照程序建议投资可以保证收益");
+		System.out.println("  1. 本计算器用于根据不同博彩公司对某场比赛的不同赔率给出对冲投资建议，按照程序建议投资可以保证收益");
 		System.out.println("  2. 使用方法:输入希望进行对冲操作的平台数量->输入结果数->输入各公司不同结果的赔率(注意顺序一致)");
 		System.out.println("  3. 虽然本程序给出的投资建议可以保证稳赚不赔，但请始终牢记：投资有风险，入市需谨慎！");
 		System.out.println("***********************************************************************");
@@ -154,6 +177,10 @@ public class Calculator {
 	 */
 	private static void printTail() {
 		System.out.println("****************************谢谢使用！祝投资顺利！****************************");
-		
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
