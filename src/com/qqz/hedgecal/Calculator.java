@@ -140,7 +140,7 @@ public class Calculator {
 	private static void promptDataFormatError(){
 		System.out.println("数据格式错误，请重启程序再来一次。");
 		try {
-			Thread.sleep(500);
+			Thread.sleep(1500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -153,7 +153,7 @@ public class Calculator {
 	private static void promptDataValueError() {
 		System.out.println("输入的数据值有误，无法进行对冲计算，请重启程序再来一次");
 		try {
-			Thread.sleep(500);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
